@@ -13,47 +13,48 @@ mongoose.connect 'mongodb://todo:todo@ds049651.mongolab.com:49651/heroku_app3440
 mongoose.connection.on 'open', ->
   console.log 'Connected to db'
   Todo.remove (err) ->
+autoIncrement = require 'mongoose-auto-increment'
+autoIncrement.initialize mongoose.connection
 
-Todo = mongoose.model 'Todo',
-  id: Number
+todoSchema = new mongoose.Schema
   order: Number
   title: String
   completed: Boolean
 
-id = 0
+todoSchema.plugin autoIncrement.plugin,
+  model: 'Todo'
+  field: 'id'
+Todo = mongoose.model 'Todo', todoSchema
 
-add_url = (base, todo) ->
+
+addUrl = (base, todo) ->
   todo.url = "http://#{base}/#{todo.id}"
 
 app.get '/', (req,res) ->
   Todo.find().lean().exec (err, todos) ->
-    add_url(req.get('host'), todo) for todo in todos
+    addUrl(req.get('host'), todo) for todo in todos
     res.json todos
-    res.end()
 
 app.get '/:id', (req,res) ->
   Todo.findOne({'id': req.params['id']}).lean().exec (err, todo) ->
-    add_url req.get('host'), todo
+    addUrl req.get('host'), todo
     res.json todo
-    res.end()
 
 app.post '/', (req,res) ->
   todo = req.body
-  todo.id = ++id
   todo.completed = false
-  add_url req.get('host'), todo
 
   todo_mod = new Todo todo
-  todo_mod.save (err) ->
+  todo_mod.save (err, todo) ->
+    todo = todo.toObject()
+    console.log todo
+    addUrl req.get('host'), todo
     res.json todo
-    res.end()
 
 app.patch '/:id', (req, res) ->
   Todo.findOneAndUpdate({id: req.params['id']}, req.body).lean().exec (err, todo) ->
-    add_url req.get('host'), todo
+    addUrl req.get('host'), todo
     res.json todo
-    res.end()
-
 
 app.delete '/', (req, res) ->
   Todo.remove (err) ->
