@@ -9,8 +9,6 @@ app.use cors()
 bodyParser = require 'body-parser'
 app.use bodyParser.json()
 
-http = require('http').createServer app
-
 todo_db = {}
 id = 0
 
@@ -49,4 +47,7 @@ app.delete '/:id', (req, res) ->
   delete todo_db[req.params['id']]
   res.status(204).end()
 
-http.listen process.env.PORT || 8080
+port = process.env.PORT || 8080
+
+app.listen port, ->
+  console.log "Node server started on port #{port}"
