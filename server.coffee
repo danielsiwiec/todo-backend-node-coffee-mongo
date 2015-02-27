@@ -1,7 +1,7 @@
-_ = require 'lodash'
-
 express = require 'express'
 cors = require 'cors'
+
+mongoose = require 'mongoose'
 
 app = express()
 app.use cors()
@@ -9,43 +9,59 @@ app.use cors()
 bodyParser = require 'body-parser'
 app.use bodyParser.json()
 
-todo_db = {}
+mongoose.connect 'mongodb://todo:todo@ds049651.mongolab.com:49651/heroku_app34400100'
+mongoose.connection.on 'open', ->
+  console.log 'Connected to db'
+  Todo.remove (err) ->
+
+Todo = mongoose.model 'Todo',
+  id: Number
+  order: Number
+  title: String
+  completed: Boolean
+
 id = 0
 
+add_url = (base, todo) ->
+  todo.url = "http://#{base}/#{todo.id}"
+
 app.get '/', (req,res) ->
-  todos = (todo for id,todo of todo_db)
-  res.json todos
-  res.end()
+  Todo.find().lean().exec (err, todos) ->
+    add_url(req.get('host'), todo) for todo in todos
+    res.json todos
+    res.end()
 
 app.get '/:id', (req,res) ->
-  todo = todo_db[req.params['id']]
-  res.json todo
-  res.end()
+  Todo.findOne({'id': req.params['id']}).lean().exec (err, todo) ->
+    add_url req.get('host'), todo
+    res.json todo
+    res.end()
 
 app.post '/', (req,res) ->
   todo = req.body
   todo.id = ++id
   todo.completed = false
-  todo.url = "http://#{req.get 'host'}/#{todo.id}"
+  add_url req.get('host'), todo
 
-  todo_db[id]=todo
-  res.json todo
-  res.end()
+  todo_mod = new Todo todo
+  todo_mod.save (err) ->
+    res.json todo
+    res.end()
 
 app.patch '/:id', (req, res) ->
-  todo = todo_db[req.params['id']]
-  _.merge todo, req.body
-  todo_db[req.params['id']]=todo
-  res.json todo
-  res.end()
+  Todo.findOneAndUpdate({id: req.params['id']}, req.body).lean().exec (err, todo) ->
+    add_url req.get('host'), todo
+    res.json todo
+    res.end()
+
 
 app.delete '/', (req, res) ->
-  todo_db = {}
-  res.status(204).end()
+  Todo.remove (err) ->
+    res.status(204).end()
 
 app.delete '/:id', (req, res) ->
-  delete todo_db[req.params['id']]
-  res.status(204).end()
+  Todo.remove {id: req.params['id']}, (err) ->
+    res.status(204).end()
 
 port = process.env.PORT || 8080
 
