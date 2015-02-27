@@ -1,0 +1,17 @@
+{
+  "name": "todo-backend-node-coffee-mongo",
+  "version": "0.0.1",
+  "description": "TODO Backend with node, coffee and mongo",
+  "main": "server.coffee",
+  "dependencies": {
+    "body-parser": "^1.12.0",
+    "cors": "^2.5.3",
+    "express": "^4.12.0",
+    "lodash": "^3.3.1"
+  },
+  "author": "Dan Siwiec",
+  "devDependencies": {},
+  "engines": {
+    "node": "0.11.13"
+  }
+}
