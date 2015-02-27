@@ -49,4 +49,4 @@ app.delete '/:id', (req, res) ->
   delete todo_db[req.params['id']]
   res.status(204).end()
 
-http.listen 8080
+http.listen process.env.PORT || 8080
