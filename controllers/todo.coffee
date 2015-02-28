@@ -14,11 +14,11 @@ module.exports = ->
 
   findAll: (baseUrl) ->
     Todo.find().exec().then (todos) ->
-      addUrl(baseUrl, toWireType(todo)) for todo in todos
+      addUrl(baseUrl, toWireType todo) for todo in todos
 
   findById: (id, baseUrl) ->
     Todo.findOne({'id': id}).exec().then (todo) ->
-      addUrl baseUrl, toWireType(todo)
+      addUrl baseUrl, toWireType todo
 
   create: (todo, baseUrl) ->
     todo.completed = false
@@ -29,10 +29,10 @@ module.exports = ->
 
   update: (id, patch, baseUrl) ->
     Todo.findOneAndUpdate({id: id}, patch).exec().then (todo) ->
-      addUrl baseUrl, toWireType(todo)
+      addUrl baseUrl, toWireType todo
 
   deleteAll: ->
     Todo.remove().exec()
 
   deleteById: (id) ->
-    Todo.remove({id: id}).exec()
+    Todo.remove(id: id).exec()
