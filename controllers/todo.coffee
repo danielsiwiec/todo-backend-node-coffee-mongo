@@ -1,5 +1,11 @@
 module.exports = ->
 
+  toWireType = (todo) ->
+    id: todo.id
+    title: todo.title
+    order: todo.order
+    completed: todo.completed
+
   addUrl = (base, todo) ->
     todo.url = "http://#{base}/#{todo.id}"
     todo
@@ -7,23 +13,23 @@ module.exports = ->
   Todo = require('../models/todo')()
 
   findAll: (baseUrl) ->
-    Todo.find().lean().exec (err, todos) ->
-      addUrl(baseUrl, todo) for todo in todos
+    Todo.find().exec().then (todos) ->
+      addUrl(baseUrl, toWireType(todo)) for todo in todos
 
   findById: (id, baseUrl) ->
-    Todo.findOne({'id': id}).lean().exec (err, todo) ->
-      addUrl baseUrl, todo
+    Todo.findOne({'id': id}).exec().then (todo) ->
+      addUrl baseUrl, toWireType(todo)
 
   create: (todo, baseUrl) ->
     todo.completed = false
 
     Todo.create(todo).then (todo) ->
-      todo = todo.toObject()
+      todo = toWireType(todo)
       addUrl baseUrl, todo
 
   update: (id, patch, baseUrl) ->
-    Todo.findOneAndUpdate({id: id}, patch).lean().exec (err, todo) ->
-      addUrl baseUrl, todo
+    Todo.findOneAndUpdate({id: id}, patch).exec().then (todo) ->
+      addUrl baseUrl, toWireType(todo)
 
   deleteAll: ->
     Todo.remove().exec()
