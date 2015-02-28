@@ -1,8 +1,9 @@
 module.exports = ->
 
   mongoose = require 'mongoose'
+  config = require '../config'
 
-  mongoose.connect 'mongodb://todo:todo@ds049651.mongolab.com:49651/heroku_app34400100'
+  mongoose.connect config.dbUrl
   mongoose.connection.on 'open', ->
     console.log 'Connected to db'
 

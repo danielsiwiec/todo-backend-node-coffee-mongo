@@ -1,10 +1,11 @@
 express = require 'express'
-port = process.env.PORT || 8080
+routes = require './app/routes'
+config = require './config'
 
 app = express()
-
-routes = require './app/routes'
 routes app
 
-app.listen port, ->
-  console.log "Node server started on port #{port}"
+
+
+app.listen config.port, ->
+  console.log "Node server started on port #{config.port}"
