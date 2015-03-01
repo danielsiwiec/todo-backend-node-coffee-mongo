@@ -8,29 +8,22 @@ module.exports = (app) ->
 
   controller = require('../controllers/todo')()
 
-  addUrl = (base, todo) ->
-    todo.url = "http://#{base}/#{todo.id}"
-
   app.get '/', (req,res) ->
-    controller.findAll(req.get 'host').then (todos) ->
-      res.json todos
+    controller.findAll(req.get 'host').then (todos) -> res.json todos
 
   app.get '/:id', (req,res) ->
     controller.findById(req.params['id'], req.get 'host').then (todo) ->
       res.json todo
 
   app.post '/', (req,res) ->
-    controller.create(req.body, req.get 'host').then (todo) ->
-      res.json todo
+    controller.create(req.body, req.get 'host').then (todo) -> res.json todo
 
   app.patch '/:id', (req, res) ->
     controller.update(req.params['id'], req.body, req.get 'host').then (todo) ->
       res.json todo
 
   app.delete '/', (req, res) ->
-    controller.deleteAll().then ->
-      res.status(204).end()
+    controller.deleteAll().then -> res.status(204).end()
 
   app.delete '/:id', (req, res) ->
-    controller.deleteById(req.params['id']).then ->
-      res.status(204).end()
+    controller.deleteById(req.params['id']).then -> res.status(204).end()

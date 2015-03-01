@@ -31,8 +31,6 @@ module.exports = ->
     Todo.findOneAndUpdate({id: id}, patch).exec().then (todo) ->
       addUrl baseUrl, toWireType todo
 
-  deleteAll: ->
-    Todo.remove().exec()
+  deleteAll: -> Todo.remove().exec()
 
-  deleteById: (id) ->
-    Todo.remove(id: id).exec()
+  deleteById: (id) -> Todo.remove(id: id).exec()

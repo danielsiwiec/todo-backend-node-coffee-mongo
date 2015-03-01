@@ -15,4 +15,4 @@ module.exports = (grunt) ->
         files: ['**/*.coffee', '!node_modules/**']
         tasks: 'coffeelint'
 
-  grunt.registerTask 'default', ['concurrent:dev']
+  grunt.registerTask 'default', ['coffeelint', 'concurrent:dev']
