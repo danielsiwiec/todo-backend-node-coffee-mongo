@@ -1,6 +1,5 @@
 module.exports = (grunt) ->
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks)
-  # grunt.loadNpmTasks 'grunt-nodemon'
   grunt.initConfig
     concurrent:
       dev: ['nodemon', 'watch']
